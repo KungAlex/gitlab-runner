@@ -1,0 +1,28 @@
+---
+# tasks file for gitlab-runner
+
+- name: 'prepare an new runner'
+  command: docker run -d --name gitlab-runner -v /srv/gitlab-runner/config:/etc/gitlab-runner -v /var/run/docker.sock:/var/run/docker.sock gitlab/gitlab-runner:latest
+
+- name: 'register an new runner'
+  command: docker exec gitlab-runner gitlab-runner register --non-interactive --executor docker --url https://{{ host_name }} --name {{ runner_name }} --registration-token {{ registration_token }} --docker-image alpine:latest --locked={{ looked_runner }} --docker-privileged
+
+- name: 'stop docker'
+  command: docker stop gitlab-runner
+
+- name: 'remove docker'
+  command: docker rm gitlab-runner
+
+- name: 'create docker-compose file from template'
+  template:
+      src: docker-compose.j2
+      dest: /home/{{ user_name }}/docker-compose.yml
+
+- name: 'docker-compose up'
+  shell: docker-compose up &
+
+- name: 'start runner docker-compose'
+  shell: docker exec gitlab-runner gitlab-runner run &
+
+
+

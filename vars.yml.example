@@ -1,0 +1,10 @@
+# vars for role kungalex.secure_droplet
+user_name: <<XXX>>
+pw_hash: <<XXX>>
+github_user: <<XXX>>
+ssh_port: 22
+
+runner_name: local-vagrant
+host_name: <<GIT HOST>>
+registration_token: <<XXX>>
+looked_runner: false

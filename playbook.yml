@@ -1,0 +1,39 @@
+---
+- name: Install Ansible dependencies
+  hosts: all
+  remote_user: root
+
+  gather_facts: False
+
+  tasks:
+  - name: "install python"
+    raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+
+- name: Run extra roles
+  hosts: all
+  remote_user: root
+  become: yes
+
+  vars_files:
+    - vars.yml
+
+  roles:
+    - kungalex.secure_droplet
+    - kungalex.docker-role
+
+  tasks:
+    - name: 'Add user to docker group'
+      user:
+        name: "{{ user_name }}"
+        shell: /bin/bash
+        groups: docker
+        append: yes
+
+- name: Install gitlab-runner
+  hosts: all
+  remote_user: "{{ user_name }}"
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - include: tasks/main.yml
